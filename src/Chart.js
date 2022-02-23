@@ -9,7 +9,7 @@ function Chart({ title, data }) {
 
     return (
       <li key={i}>
-        Year: {year} Temp: {data[temp]}
+        Year: {year} Temp: {temp}
       </li>
     );
   });
