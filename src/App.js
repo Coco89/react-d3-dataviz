@@ -1,31 +1,28 @@
 import React, { useEffect, useState } from "react";
 import "./App.css";
+import * as d3 from "d3";
 import Chart from "./Chart";
 import Column from "./Column";
 
 function App() {
   const [data, setData] = useState([]);
-
-  // console.log("data ==>", data);
-  // console.log("title ==>", data.description);
-  // console.log("stats ==>", data.data);
-  const title = data.description;
-  const stats = data.data;
+  const [loading, setLoading] = React.useState(true);
 
   useEffect(() => {
-    fetch(
+    d3.json(
       "https://www.ncdc.noaa.gov/cag/global/time-series/globe/land_ocean/1/10/1880-2020/data.json"
-    )
-      .then((response) => response.json())
-      .then(setData)
-      .catch((error) => {
-        console.log(error);
-      });
+    ).then((data) => {
+      setData(data);
+      setLoading(false);
+    });
+    return () => undefined;
   }, []);
 
   return (
     <>
-      <Chart title={title} data={stats} />
+      {loading && <div>loading</div>}
+      {!loading && <Chart data={data} />}
+      {/* {!loading && <Chart title={data.description} data={data.data} />} */}
       <Column />
     </>
   );
