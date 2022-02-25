@@ -6,6 +6,7 @@ function DropDown({ data }) {
   const [value, setValue] = useState("");
   const [valueTo, setValueTo] = useState("");
   const [valueFrom, setValueFrom] = useState("");
+
   const onChange = (event) => {
     event.preventDefault();
     if (event.target.id === "to") {
@@ -17,6 +18,12 @@ function DropDown({ data }) {
     } else {
       setValue(event.target.value);
     }
+  };
+
+  const reset = (event) => {
+    event.preventDefault();
+    console.log("reset event ===>", event);
+    d3.selectAll("svg > *").remove();
   };
 
   let years = Object.keys(data).map((key, i) => {
@@ -71,7 +78,11 @@ function DropDown({ data }) {
             htmlFor="formGroupExampleInput2"
             className="form-label"
           ></label>
-          <button type="reset" className="btn btn-primary reset">
+          <button
+            type="reset"
+            className="btn btn-primary reset"
+            onClick={reset}
+          >
             Reset Dates
           </button>
         </div>
@@ -81,17 +92,10 @@ function DropDown({ data }) {
 }
 
 function Chart({ data }) {
+  console.log("data", data);
   const heading = data.description.title;
 
   const parseTime = d3.timeParse("%y");
-
-  let yTemp = [];
-  let xYear = [];
-
-  Object.keys(data.data).map((key, i) => {
-    yTemp.push(data.data[key]);
-    xYear.push(key);
-  });
 
   const url =
     "https://www.ncdc.noaa.gov/cag/global/time-series/globe/land_ocean/1/10/1880-2020/data.json";
@@ -101,10 +105,12 @@ function Chart({ data }) {
   const y_label = "Temperature";
   const location_name = heading;
 
+  // seeting margin, width, and height
   const margin = { left: 120, right: 30, top: 60, bottom: 30 },
     width = document.querySelector("body").clientWidth,
-    height = 750;
+    height = 1250;
 
+  // render svg
   const svg = d3.select("svg").attr("viewBox", [0, 0, width, height]);
 
   // add title
@@ -145,6 +151,7 @@ function Chart({ data }) {
     .scaleLinear()
     .range([height - margin.bottom - margin.top, margin.top]);
 
+  // ticks: number of ticks displayed
   const ticks = 10;
 
   const x_axis = d3
@@ -161,13 +168,15 @@ function Chart({ data }) {
     .ticks(ticks, ".1")
     .tickSize(-width + margin.left + margin.right);
 
-  // convert precipitationProbability to % gotten from this thread https://stackoverflow.com/questions/38078924/d3-js-axis-percentage-values-with-decimals
-  //   y_axis.tickFormat((d) => {
-  //     if (!Number.isInteger(d)) {
-  //       d = decimalFormatter(d);
-  //     }
-  //     return d + "%";
-  //   });
+  // convert y axis to have 2 decimal places
+  y_axis.tickFormat((d) => {
+    return d3.format(".2f")(d / 1);
+  });
+
+  // convert x axis to have no comma
+  x_axis.tickFormat((d) => {
+    return d3.format("")(d / 1);
+  });
 
   const year = (d) => d.year;
   const temperature = (d) => d.temp;
@@ -191,14 +200,16 @@ function Chart({ data }) {
 
     const d = temperatures;
 
-    let xLabels = temperatures.year;
-    let yLabels = temperatures.temp;
+    // x_scale.domain(d3.extent(d, year)).nice(ticks);
+    x_scale
+      .domain([
+        d3.min(temperatures, (t) => t.year),
+        d3.max(temperatures, (t) => t.year),
+      ])
+      .nice(ticks);
 
-    let date = d.sort((a, b) => +a.year - +b.year);
-
-    x_scale.domain(d3.extent(d, year)).nice(ticks);
-
-    y_scale.domain(d3.extent(d, temperature)).nice(ticks);
+    // y_scale.domain(d3.extent(d, temperature)).nice(ticks);
+    y_scale.domain([-0.6, d3.max(temperatures, (t) => t.temp)]).nice(ticks);
 
     // append x axis
     svg
@@ -216,7 +227,7 @@ function Chart({ data }) {
       .append("path")
       .attr("fill", "none")
       .attr("stroke", "steelblue")
-      .attr("stroke-width", 4)
+      .attr("stroke-width", 2)
       .attr("d", line_generator(d));
   });
 
