@@ -12,18 +12,14 @@ function DropDown({ data }) {
     if (event.target.id === "to") {
       setValueTo(event.target.valueTo);
       //hide values on x-axis - https://developer.mozilla.org/en-US/docs/Web/API/Event/target
+      update(event.target.id, event.target.value);
     } else if (event.target.id === "from") {
       setValueFrom(event.target.valueFrom);
       //hide values on x-axis - https://developer.mozilla.org/en-US/docs/Web/API/Event/target
+      update(event.target.id, event.target.value);
     } else {
       setValue(event.target.value);
     }
-  };
-
-  const reset = (event) => {
-    event.preventDefault();
-    console.log("reset event ===>", event);
-    d3.selectAll("svg > *").remove();
   };
 
   let years = Object.keys(data).map((key, i) => {
@@ -78,11 +74,7 @@ function DropDown({ data }) {
             htmlFor="formGroupExampleInput2"
             className="form-label"
           ></label>
-          <button
-            type="reset"
-            className="btn btn-primary reset"
-            onClick={reset}
-          >
+          <button type="reset" className="btn btn-primary reset">
             Reset Dates
           </button>
         </div>
@@ -91,11 +83,30 @@ function DropDown({ data }) {
   );
 }
 
+//used to update x-axis with new min and max values upon dropdown selection
+function update(prep, val) {
+  console.log("prep", prep, "val", val);
+  // d3.selectAll("svg > *").remove();
+}
+
 function Chart({ data }) {
-  console.log("data", data);
   const heading = data.description.title;
 
-  const parseTime = d3.timeParse("%y");
+  const onChange = (event) => {
+    console.log("inside Chart on change event: ", event);
+    event.preventDefault();
+    // if (event.target.id === "to") {
+    //   setValueTo(event.target.valueTo);
+    //   //hide values on x-axis - https://developer.mozilla.org/en-US/docs/Web/API/Event/target
+    //   update(event.target.id, event.target.value);
+    // } else if (event.target.id === "from") {
+    //   setValueFrom(event.target.valueFrom);
+    //   //hide values on x-axis - https://developer.mozilla.org/en-US/docs/Web/API/Event/target
+    //   update(event.target.id, event.target.value);
+    // } else {
+    //   setValue(event.target.value);
+    // }
+  };
 
   const url =
     "https://www.ncdc.noaa.gov/cag/global/time-series/globe/land_ocean/1/10/1880-2020/data.json";
@@ -191,7 +202,6 @@ function Chart({ data }) {
     let temperatures = [];
 
     Object.keys(data).map((key, i) => {
-      //   const year = parseTime(key);
       const year = key;
       const temp = data[key];
 
@@ -200,13 +210,12 @@ function Chart({ data }) {
 
     const d = temperatures;
 
+    //min and max for
+    let minYear = d3.min(temperatures, (t) => t.year);
+    let maxYear = d3.max(temperatures, (t) => t.year);
+
     // x_scale.domain(d3.extent(d, year)).nice(ticks);
-    x_scale
-      .domain([
-        d3.min(temperatures, (t) => t.year),
-        d3.max(temperatures, (t) => t.year),
-      ])
-      .nice(ticks);
+    x_scale.domain([minYear, maxYear]).nice(ticks);
 
     // y_scale.domain(d3.extent(d, temperature)).nice(ticks);
     y_scale.domain([-0.6, d3.max(temperatures, (t) => t.temp)]).nice(ticks);
@@ -234,7 +243,7 @@ function Chart({ data }) {
   return (
     <div className="container">
       <h1 className="heading"> {heading} </h1>
-      <DropDown data={data.data} />
+      <DropDown onChange={onChange} data={data.data} />
       <svg></svg>
     </div>
   );
