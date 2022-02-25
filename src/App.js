@@ -16,15 +16,15 @@ function App() {
       setLoading(false);
     });
     return () => undefined;
-  }, []);
+  }, [data]);
 
   return (
-    <>
+    <div className="container">
       {loading && <div>loading</div>}
       {!loading && <Chart data={data} />}
       {/* {!loading && <Chart title={data.description} data={data.data} />} */}
       <Column />
-    </>
+    </div>
   );
 }
 
