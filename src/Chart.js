@@ -3,32 +3,20 @@ import * as d3 from "d3";
 import "./Chart.css";
 
 function DropDown({ data }) {
-  const onChange = (event) => {
-    this.setState({ value: event.target.value });
-  };
-
-  const initialFormState = {
-    from: "",
-    to: "",
-  };
-  const [formData, setFormData] = useState({ ...initialFormState });
-  const handleChange = ({ target }) => {
-    setFormData({
-      ...formData,
-      [target.name]: target.value,
-    });
-  };
-
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    console.log("Submitted:", formData);
-    setFormData({ ...initialFormState });
-  };
-
   const [value, setValue] = useState("");
-  const handleSelect = (e) => {
-    console.log(e);
-    setValue(e);
+  const [valueTo, setValueTo] = useState("");
+  const [valueFrom, setValueFrom] = useState("");
+  const onChange = (event) => {
+    event.preventDefault();
+    if (event.target.id === "to") {
+      setValueTo(event.target.valueTo);
+      //hide values on x-axis - https://developer.mozilla.org/en-US/docs/Web/API/Event/target
+    } else if (event.target.id === "from") {
+      setValueFrom(event.target.valueFrom);
+      //hide values on x-axis - https://developer.mozilla.org/en-US/docs/Web/API/Event/target
+    } else {
+      setValue(event.target.value);
+    }
   };
 
   let years = Object.keys(data).map((key, i) => {
@@ -44,20 +32,6 @@ function DropDown({ data }) {
 
   return (
     <div>
-      {/* // <div className="form-group">
-    //   <select
-    //     className="form-control"
-    //     name="from"
-    //     onChange={data.data.onChange}
-    //   >
-    //     <option defaultValue>Select Year</option>
-    //     {data.data.map((val, index) => (
-    //       <option key={index} value={val}>
-    //         {val}
-    //       </option>
-    //     ))}
-    //   </select> */}
-
       <form className="row gy-2 gx-3 align-items-center">
         <div className="mb-3 col-auto">
           <label htmlFor="fromYear" className="form-label">
@@ -66,11 +40,10 @@ function DropDown({ data }) {
           <select
             id="from"
             name="from"
-            value={formData.from}
+            value={valueFrom}
             className="form-select"
-            aria-label="Default select example"
-            onChange={(e) => setValue(e.target.value)}
-            onSelect={handleSelect}
+            aria-label="Select year"
+            onChange={onChange}
           >
             <option defaultValue>Select Year</option>
             {years}
@@ -83,11 +56,10 @@ function DropDown({ data }) {
           <select
             id="to"
             name="to"
-            value={formData.to}
+            value={valueTo}
             className="form-select"
-            aria-label="Default select example"
-            onChange={(e) => setValue(e.target.value)}
-            onSelect={handleSelect}
+            aria-label="Select year"
+            onChange={onChange}
           >
             <option defaultValue>Select Year</option>
             {years}
@@ -113,8 +85,6 @@ function Chart({ data }) {
 
   const parseTime = d3.timeParse("%y");
 
-  let years = [];
-
   let yTemp = [];
   let xYear = [];
 
@@ -133,7 +103,7 @@ function Chart({ data }) {
 
   const margin = { left: 120, right: 30, top: 60, bottom: 30 },
     width = document.querySelector("body").clientWidth,
-    height = 650;
+    height = 750;
 
   const svg = d3.select("svg").attr("viewBox", [0, 0, width, height]);
 
