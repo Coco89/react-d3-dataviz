@@ -1,0 +1,30 @@
+/* Title - Header */
+.heading {
+  text-align: center;
+}
+
+/* Dropdown */
+.reset {
+  margin-top: 32px;
+}
+
+/* Chart */
+.domain {
+  display: none;
+}
+
+.tick line {
+  stroke: #c0c0bb;
+}
+.tick text {
+  fill: #8e8883;
+  font-family: sans-serif;
+}
+.axis-label {
+  fill: #635f5d;
+  font-family: sans-serif;
+}
+.svg_title {
+  fill: #635f5d;
+  font-family: sans-serif;
+}
