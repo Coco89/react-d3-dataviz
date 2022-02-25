@@ -1,10 +1,119 @@
 import React, { useEffect, useState } from "react";
 import * as d3 from "d3";
+import "./Chart.css";
+
+function DropDown({ data }) {
+  const onChange = (event) => {
+    this.setState({ value: event.target.value });
+  };
+
+  const initialFormState = {
+    from: "",
+    to: "",
+  };
+  const [formData, setFormData] = useState({ ...initialFormState });
+  const handleChange = ({ target }) => {
+    setFormData({
+      ...formData,
+      [target.name]: target.value,
+    });
+  };
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    console.log("Submitted:", formData);
+    setFormData({ ...initialFormState });
+  };
+
+  const [value, setValue] = useState("");
+  const handleSelect = (e) => {
+    console.log(e);
+    setValue(e);
+  };
+
+  let years = Object.keys(data).map((key, i) => {
+    const year = key;
+    const temp = data[key];
+
+    return (
+      <option key={i} value={year}>
+        {year}
+      </option>
+    );
+  });
+
+  return (
+    <div>
+      {/* // <div className="form-group">
+    //   <select
+    //     className="form-control"
+    //     name="from"
+    //     onChange={data.data.onChange}
+    //   >
+    //     <option defaultValue>Select Year</option>
+    //     {data.data.map((val, index) => (
+    //       <option key={index} value={val}>
+    //         {val}
+    //       </option>
+    //     ))}
+    //   </select> */}
+
+      <form className="row gy-2 gx-3 align-items-center">
+        <div className="mb-3 col-auto">
+          <label htmlFor="fromYear" className="form-label">
+            From:
+          </label>
+          <select
+            id="from"
+            name="from"
+            value={formData.from}
+            className="form-select"
+            aria-label="Default select example"
+            onChange={(e) => setValue(e.target.value)}
+            onSelect={handleSelect}
+          >
+            <option defaultValue>Select Year</option>
+            {years}
+          </select>
+        </div>
+        <div className="mb-3 col-auto">
+          <label htmlFor="toYear" className="form-label">
+            To:
+          </label>
+          <select
+            id="to"
+            name="to"
+            value={formData.to}
+            className="form-select"
+            aria-label="Default select example"
+            onChange={(e) => setValue(e.target.value)}
+            onSelect={handleSelect}
+          >
+            <option defaultValue>Select Year</option>
+            {years}
+          </select>
+        </div>
+
+        <div className="mb-3 col-auto">
+          <label
+            htmlFor="formGroupExampleInput2"
+            className="form-label"
+          ></label>
+          <button type="reset" className="btn btn-primary reset">
+            Reset Dates
+          </button>
+        </div>
+      </form>
+    </div>
+  );
+}
 
 function Chart({ data }) {
   const heading = data.description.title;
 
   const parseTime = d3.timeParse("%y");
+
+  let years = [];
 
   let yTemp = [];
   let xYear = [];
@@ -24,7 +133,7 @@ function Chart({ data }) {
 
   const margin = { left: 120, right: 30, top: 60, bottom: 30 },
     width = document.querySelector("body").clientWidth,
-    height = 525;
+    height = 650;
 
   const svg = d3.select("svg").attr("viewBox", [0, 0, width, height]);
 
@@ -142,8 +251,9 @@ function Chart({ data }) {
   });
 
   return (
-    <div>
-      <h1> {heading} </h1>
+    <div className="container">
+      <h1 className="heading"> {heading} </h1>
+      <DropDown data={data.data} />
       <svg></svg>
     </div>
   );
