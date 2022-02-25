@@ -67,7 +67,7 @@ function Column() {
           </div>
         </div>
       </div>
-      {/* Only Shows on Mobile (below 600px) */}
+      {/* Only Shows on Mobile - phone and tablet (below 600px) */}
       <div className="container mobile">
         <div className="accordion" id="accordionExample">
           <div className="accordion-item">
