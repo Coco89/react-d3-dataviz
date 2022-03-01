@@ -1,31 +1,37 @@
-import React, { useEffect, useState } from "react";
-import "./App.css";
-import * as d3 from "d3";
-import Chart from "./Chart";
-import Column from "./Column";
+import React, { useEffect, useState } from 'react';
+import './App.css';
+import * as d3 from 'd3';
+import Chart from './Chart';
+import Column from './Column';
 
 function App() {
-  const [data, setData] = useState({});
-  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    d3.json(
-      "https://www.ncdc.noaa.gov/cag/global/time-series/globe/land_ocean/1/10/1880-2020/data.json"
-    ).then((data2) => {
-      setData(data2);
-      setLoading(false);
-    });
-    // return () => undefined;
-  }, []);
+    const [ data, setData ] = useState( {} );
+    const [ loading, setLoading ] = useState( true );
 
-  return (
-    <div className="container">
-      {loading && <div>loading</div>}
-      {!loading && <Chart data={data} />}
-      {/* {!loading && <Chart title={data.description} data={data.data} />} */}
-      <Column />
-    </div>
-  );
+    useEffect( () => {
+
+        d3.json(
+            'https://www.ncdc.noaa.gov/cag/global/time-series/globe/land_ocean/1/10/1880-2020/data.json'
+        ).then( ( data2 ) => {
+
+            setData( data2 );
+            setLoading( false );
+
+        } );
+        // return () => undefined;
+
+    }, [] );
+
+    return (
+        <div className='container'>
+            { loading && <div>loading</div> }
+            { !loading && <Chart data={ data } /> }
+            { /* {!loading && <Chart title={data.description} data={data.data} />} */ }
+            <Column />
+        </div>
+    );
+
 }
 
 export default App;

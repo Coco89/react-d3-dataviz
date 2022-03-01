@@ -1,13 +1,13 @@
 /* Hide Mobile View on Desktop */
 @media all and (min-width: 601px) {
-  .mobile {
-    display: none;
-  }
+    .mobile {
+        display: none;
+    }
 }
 
 /* Hide Desktop View on Mobile */
 @media all and (max-width: 600px) {
-  .desktop {
-    display: none;
-  }
+    .desktop {
+        display: none;
+    }
 }
